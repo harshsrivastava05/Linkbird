@@ -1,4 +1,3 @@
-
 import {
   timestamp,
   pgTable,
@@ -6,6 +5,7 @@ import {
   primaryKey,
   integer,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 
@@ -45,7 +45,9 @@ export const accounts = pgTable(
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").notNull().primaryKey(),
-  userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
@@ -60,3 +62,28 @@ export const verificationTokens = pgTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   })
 );
+
+export const campaigns = pgTable("campaigns", {
+  id: text("id").notNull().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  status: varchar("status", { length: 50 }).default("Active").notNull(), // e.g., 'Active', 'Paused'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+});
+
+// New Leads Table
+export const leads = pgTable("leads", {
+  id: text("id").notNull().primaryKey(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  status: varchar("status", { length: 50 }).default("Pending").notNull(), // e.g., 'Pending', 'Contacted'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  campaignId: text("campaign_id")
+    .notNull()
+    .references(() => campaigns.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+});
