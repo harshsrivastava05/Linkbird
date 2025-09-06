@@ -31,38 +31,26 @@ export const {
           return null;
         }
 
-        // 1. Find the user in the database
+        // Find the user in the database
         const user = await db.query.users.findFirst({
           where: eq(users.email, credentials.email as string),
         });
 
-        // 2. If user exists, check password
+        // If user exists and has a password, check it
         if (user && user.hashedPassword) {
           const passwordsMatch = await bcrypt.compare(
             credentials.password as string,
             user.hashedPassword
           );
 
-          if (passwordsMatch) return user;
-        }
-        // 3. If user doesn't exist, create a new user
-        if (!user) {
-          const hashedPassword = await bcrypt.hash(
-            credentials.password as string,
-            10
-          );
-          const newUser = await db
-            .insert(users)
-            .values({
-              id: crypto.randomUUID(),
-              email: credentials.email as string,
-              hashedPassword: hashedPassword,
-              name: "New User", 
-            })
-            .returning();
-          return newUser[0];
+          if (passwordsMatch) {
+            // Return user without the hashed password
+            const { hashedPassword, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+          }
         }
 
+        // Return null if authentication fails
         return null;
       },
     }),

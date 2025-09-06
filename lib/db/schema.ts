@@ -63,16 +63,6 @@ export const verificationTokens = pgTable(
   })
 );
 
-export const campaigns = pgTable("campaigns", {
-  id: text("id").notNull().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  status: varchar("status", { length: 50 }).default("Active").notNull(), // e.g., 'Active', 'Paused'
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-});
-
 // New Leads Table
 export const leads = pgTable("leads", {
   id: text("id").notNull().primaryKey(),
@@ -86,4 +76,14 @@ export const leads = pgTable("leads", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+});
+
+export const campaigns = pgTable("campaigns", {
+    id: text("id").notNull().primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    status: varchar("status", { length: 50 }).default("Active").notNull(),
+    // Add this line
+    progress: integer("progress").default(0).notNull(), 
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
 });

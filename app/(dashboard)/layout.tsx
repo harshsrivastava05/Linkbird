@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className={`flex-1 p-8 transition-all duration-300 ${isCollapsed ? "ml-20" : "ml-64"}`}>
+      <main className={`flex-1 p-8 transition-all duration-300 ${isCollapsed ? "ml-20" : "ml-10"}`}>
         {children}
       </main>
     </div>

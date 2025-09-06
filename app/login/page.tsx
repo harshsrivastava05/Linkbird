@@ -21,24 +21,77 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleAuthAction = async () => {
+  const handleLogin = async () => {
     setError("");
-    // We'll pass the names to the backend, but our current logic doesn't use them yet.
-    // This is something you could add later!
+    setIsLoading(true);
+    
     const result = await signIn("credentials", {
       redirect: false,
       email,
       password,
-      firstName,
-      lastName,
     });
+
+    setIsLoading(false);
 
     if (result?.error) {
       setError("Invalid credentials. Please try again.");
     } else if (result?.ok) {
       router.push("/");
+    }
+  };
+
+  const handleRegister = async () => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      // First, create the user via API
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
+
+      // If registration successful, sign them in
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        setError("Registration successful but login failed. Please try logging in.");
+      } else if (result?.ok) {
+        router.push("/");
+      }
+    } catch (error: any) {
+      setError(error.message || "Registration failed. Please try again.");
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleAuthAction = async () => {
+    if (authView === "login") {
+      await handleLogin();
+    } else {
+      await handleRegister();
     }
   };
 
@@ -102,13 +155,14 @@ export default function LoginPage() {
             />
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button onClick={handleAuthAction} className="w-full">
-            {authView === "login" ? "Login" : "Create an account"}
+          <Button onClick={handleAuthAction} className="w-full" disabled={isLoading}>
+            {isLoading ? "Loading..." : authView === "login" ? "Login" : "Create an account"}
           </Button>
           <Button
             variant="outline"
             className="w-full"
             onClick={() => signIn("google", { callbackUrl: "/" })}
+            disabled={isLoading}
           >
             {authView === "login" ? "Login with Google" : "Sign up with Google"}
           </Button>
