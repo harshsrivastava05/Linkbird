@@ -42,14 +42,24 @@ export function Sidebar() {
   return (
     <aside
       className={clsx(
-        "hidden flex-col border-r bg-background transition-all duration-300 md:flex",
+        "hidden md:flex flex-col border-r bg-background transition-all duration-300",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
       {/* Header */}
       <div className="flex h-16 items-center justify-between border-b px-6">
         <Link href="/" className="text-lg font-bold">
-          {isCollapsed ? "LB" : "LinkBird"}
+          <span className="font-bold text-lg">
+            {isCollapsed ? (
+              <>
+                L<span className="text-blue-500">B</span>
+              </>
+            ) : (
+              <>
+                Link<span className="text-blue-500">Bird</span>
+              </>
+            )}
+          </span>
         </Link>
         <Button onClick={toggleSidebar} variant="ghost" size="icon">
           <ChevronLeft
@@ -61,26 +71,28 @@ export function Sidebar() {
         </Button>
       </div>
 
-      {/* Navigation Links - flex-1 makes this section grow */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={clsx(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-primary",
-              pathname === link.href && "bg-accent text-primary",
-              isCollapsed && "justify-center"
-            )}
-          >
-            <link.icon className="h-4 w-4" />
-            {!isCollapsed && <span>{link.label}</span>}
-          </Link>
-        ))}
-      </nav>
+      {/* Navigation Links */}
+      <div className="flex-1 overflow-y-auto">
+        <nav className="space-y-1 p-4">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={clsx(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-primary",
+                pathname === link.href && "bg-accent text-primary",
+                isCollapsed && "justify-center"
+              )}
+            >
+              <link.icon className="h-4 w-4" />
+              {!isCollapsed && <span>{link.label}</span>}
+            </Link>
+          ))}
+        </nav>
+      </div>
 
-      {/* User Profile - This is pushed to the bottom */}
-      <div className="mt-auto border-t p-4">
+      {/* Fixed Footer Section */}
+      <div className="border-t p-4 shrink-0">
         <div className="flex items-center gap-4">
           <User className="h-8 w-8 rounded-full" />
           {!isCollapsed && (
