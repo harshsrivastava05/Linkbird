@@ -1,6 +1,6 @@
 # LinkBird - Full-Stack Dashboard
 
-**[Watch the Video Walkthrough on YouTube](https://youtu.be/armRKtXyCP4)**
+**[Watch the Video Walkthrough](https://drive.google.com/file/d/1MHbzLeGBnypu2PafPw8VPNNS6BYIM0pZ/view?usp=sharing)**
 
 This project is a complete, full-stack dashboard application built with Next.js, mirroring the functionality and design of a professional SaaS product. It features a secure authentication system, a data-rich dashboard, and detailed management pages for campaigns and leads.
 
