@@ -80,8 +80,9 @@ export default function LoginPage() {
       } else if (result?.ok) {
         router.push("/");
       }
-    } catch (error: any) {
-      setError(error.message || "Registration failed. Please try again.");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Registration failed. Please try again.";
+      setError(errorMessage);
     }
 
     setIsLoading(false);

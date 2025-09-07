@@ -1,4 +1,3 @@
-// app/(dashboard)/page.tsx
 import { getDashboardData } from "@/lib/data";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

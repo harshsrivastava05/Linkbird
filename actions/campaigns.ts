@@ -1,4 +1,3 @@
-// actions/campaigns.ts - Fixed with auth
 'use server';
 
 import { auth } from '@/auth';

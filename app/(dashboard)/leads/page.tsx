@@ -1,4 +1,3 @@
-// app/(dashboard)/leads/page.tsx - Enhanced with richer lead data
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -36,7 +35,7 @@ type Lead = {
   linkedinUrl?: string;
 };
 
-// Mock function to enrich lead data (in real app, this would come from your database)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const enrichLeadData = (lead: any): Lead => {
   // Mock data - in production you'd fetch this from LinkedIn API or your database
   const mockEnrichment = {

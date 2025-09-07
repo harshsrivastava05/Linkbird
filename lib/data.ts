@@ -1,4 +1,3 @@
-// lib/data.ts
 import { auth } from "@/auth";
 import { db } from "./db";
 import { campaigns, leads } from "./db/schema";

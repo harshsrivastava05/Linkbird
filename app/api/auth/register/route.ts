@@ -1,4 +1,3 @@
-// app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const newUser = await db
+    const [newUser] = await db
       .insert(users)
       .values({
         id: crypto.randomUUID(),
@@ -44,7 +43,8 @@ export async function POST(request: Request) {
       .returning();
 
     // Don't return the password hash
-    const { hashedPassword: _, ...userWithoutPassword } = newUser[0];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { hashedPassword: _, ...userWithoutPassword } = newUser;
 
     return NextResponse.json(
       {

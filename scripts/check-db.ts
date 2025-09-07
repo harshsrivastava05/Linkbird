@@ -1,4 +1,3 @@
-// scripts/check-db.ts - Add this to test your database
 import { db } from '@/lib/db';
 import { users, campaigns, leads } from '@/lib/db/schema';
 

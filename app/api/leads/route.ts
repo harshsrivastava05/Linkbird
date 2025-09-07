@@ -1,4 +1,3 @@
-// app/api/leads/route.ts - Updated to return enhanced lead data
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
@@ -8,7 +7,6 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const session = await auth();
-    console.log('Session:', session?.user?.id);
     
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -55,8 +53,6 @@ export async function GET(request: Request) {
         ? formatRelativeTime(lead.lastActivity)
         : 'Never',
     }));
-
-    console.log(`📊 Returning ${enrichedLeads.length} enhanced leads`);
 
     return NextResponse.json({ 
       leads: enrichedLeads, 

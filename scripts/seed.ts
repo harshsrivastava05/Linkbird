@@ -1,5 +1,4 @@
-// scripts/seed.ts - Enhanced with rich lead profile data
-import 'dotenv/config'; // Load .env first, before db import
+import 'dotenv/config'; 
 import { db } from '@/lib/db';
 import { campaigns, leads, users, leadActivities } from '@/lib/db/schema';
 import { faker } from '@faker-js/faker';

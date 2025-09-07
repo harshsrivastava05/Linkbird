@@ -1,4 +1,3 @@
-// actions/auth.ts
 "use server";
 
 import { signOut } from "@/auth";

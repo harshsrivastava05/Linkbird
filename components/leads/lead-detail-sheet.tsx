@@ -1,19 +1,15 @@
-// components/leads/lead-detail-sheet.tsx - Enhanced version
 "use client";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  User, 
   MapPin, 
   Building, 
-  Calendar,
   MessageSquare,
   CheckCircle2,
   Clock,

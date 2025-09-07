@@ -1,4 +1,3 @@
-// app/api/campaigns/route.ts - Enhanced debug version
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { campaigns } from "@/lib/db/schema";
@@ -7,10 +6,6 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    console.log("🏕️ ===============================");
-    console.log("🏕️ CAMPAIGNS API ROUTE CALLED");
-    console.log("🏕️ ===============================");
-
     // Get the current user's session from the server
     const session = await auth();
 
@@ -27,11 +22,6 @@ export async function GET() {
       console.log("❌ No session or user ID found - returning 401");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    console.log(
-      "✅ User authenticated, fetching campaigns for user:",
-      session.user.id
-    );
 
     // Test database connection first
     try {
@@ -53,9 +43,6 @@ export async function GET() {
     const userCampaigns = await db.query.campaigns.findMany({
       where: eq(campaigns.userId, session.user.id),
     });
-
-    console.log("🎯 User campaigns found:", userCampaigns.length);
-    console.log("🎯 User campaigns data:", userCampaigns);
 
     // Return the campaigns as a JSON response
     return NextResponse.json(userCampaigns);

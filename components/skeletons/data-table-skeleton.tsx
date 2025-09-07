@@ -1,4 +1,3 @@
-// components/skeletons/data-table-skeleton.tsx
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,

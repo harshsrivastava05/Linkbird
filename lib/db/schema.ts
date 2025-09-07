@@ -1,4 +1,3 @@
-// lib/db/schema.ts - Updated with additional lead profile fields
 import {
   timestamp,
   pgTable,
