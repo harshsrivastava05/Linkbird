@@ -1,8 +1,9 @@
 // scripts/seed.ts
+import 'dotenv/config'; // ✅ Load .env first, before db import
 import { db } from '@/lib/db';
 import { campaigns, leads, users } from '@/lib/db/schema';
 import { faker } from '@faker-js/faker';
-import { sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 async function main() {
   console.log('🌱 Seeding database...');
@@ -16,30 +17,26 @@ async function main() {
   console.log(`👤 Seeding data for user: ${firstUser.name} (${firstUser.id})`);
 
   // Clear existing campaigns and leads for this user
-  await db.delete(leads).where(sql`${leads.userId} = ${firstUser.id}`);
-  await db.delete(campaigns).where(sql`${campaigns.userId} = ${firstUser.id}`);
+  await db.delete(leads).where(eq(leads.userId, firstUser.id));
+  await db.delete(campaigns).where(eq(campaigns.userId, firstUser.id));
   console.log('🧹 Cleared existing data.');
 
   // Create 10 fake campaigns
-  const createdCampaigns = [];
-  for (let i = 0; i < 10; i++) {
-    const campaign = {
-      id: crypto.randomUUID(),
-      name: faker.company.buzzPhrase(),
-      status: faker.helpers.arrayElement(['Active', 'Paused']),
-      progress: faker.number.int({ min: 0, max: 100 }),
-      userId: firstUser.id,
-    };
-    createdCampaigns.push(campaign);
-  }
+  const createdCampaigns = Array.from({ length: 10 }, () => ({
+    id: crypto.randomUUID(),
+    name: faker.company.buzzPhrase(),
+    status: faker.helpers.arrayElement(['Active', 'Paused']),
+    progress: faker.number.int({ min: 0, max: 100 }),
+    userId: firstUser.id,
+  }));
+
   await db.insert(campaigns).values(createdCampaigns);
   console.log(`🏕️ Created ${createdCampaigns.length} campaigns.`);
 
   // Create 50 fake leads and assign them to random campaigns
-  const createdLeads = [];
-  for (let i = 0; i < 50; i++) {
+  const createdLeads = Array.from({ length: 50 }, () => {
     const randomCampaign = faker.helpers.arrayElement(createdCampaigns);
-    const lead = {
+    return {
       id: crypto.randomUUID(),
       name: faker.person.fullName(),
       email: faker.internet.email().toLowerCase(),
@@ -47,8 +44,8 @@ async function main() {
       campaignId: randomCampaign.id,
       userId: firstUser.id,
     };
-    createdLeads.push(lead);
-  }
+  });
+
   await db.insert(leads).values(createdLeads);
   console.log(`👥 Created ${createdLeads.length} leads.`);
 

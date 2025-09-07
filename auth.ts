@@ -1,4 +1,3 @@
-// auth.ts
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "./lib/db";
@@ -59,4 +58,21 @@ export const {
   pages: {
     signIn: "/login",
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      // Include user id in the token
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Include user id in the session
+      if (token.id) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+  debug: process.env.NODE_ENV === 'development', // Enable debug in development
 });

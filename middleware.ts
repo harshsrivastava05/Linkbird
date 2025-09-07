@@ -1,29 +1,41 @@
-// middleware.ts
+// middleware.ts - Fixed version
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 
 export default auth((req) => {
-  // Check if the user is authenticated
   const isLoggedIn = !!req.auth;
-
-  // If the user is not logged in and is trying to access a protected route
+  const isApiRoute = req.nextUrl.pathname.startsWith('/api');
+  const isAuthPage = req.nextUrl.pathname === '/login';
+  
+  console.log('Middleware - Path:', req.nextUrl.pathname, 'Logged in:', isLoggedIn);
+  
+  // Allow API routes to pass through (they handle their own auth)
+  if (isApiRoute) {
+    return NextResponse.next();
+  }
+  
+  // Allow access to login page
+  if (isAuthPage) {
+    return NextResponse.next();
+  }
+  
+  // Redirect to login if not authenticated
   if (!isLoggedIn) {
-    // Redirect them to the login page
+    console.log('Not logged in, redirecting to login');
     return NextResponse.redirect(new URL('/login', req.url));
   }
+  
+  return NextResponse.next();
 });
 
-// This config specifies which routes the middleware should run on
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * Match all request paths except:
      * - _next/static (static files)
-     * - _next/image (image optimization files)
+     * - _next/image (image optimization files)  
      * - favicon.ico (favicon file)
-     * - login (the login page itself)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|login).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   // Get the current user's session from the server
   const session = await auth();
+  console.log('Session:', session?.user?.id);
 
   // If there is no user, return an unauthorized error
   if (!session?.user?.id) {
