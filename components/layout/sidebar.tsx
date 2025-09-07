@@ -21,7 +21,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 import { LogoutButton } from "../auth/logout-button";
 
-// Expanded list of navigation links from the video
+// Expanded list of navigation links
 const navLinks = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leads", label: "Leads", icon: Users },
@@ -42,12 +42,12 @@ export function Sidebar() {
   return (
     <aside
       className={clsx(
-        "hidden md:flex flex-col border-r bg-background transition-all duration-300",
+        "fixed left-0 top-0 z-40 h-screen flex flex-col border-r bg-background transition-all duration-300",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b px-6">
+      <div className="flex h-16 items-center justify-between border-b px-6 shrink-0">
         <Link href="/" className="text-lg font-bold">
           <span className="font-bold text-lg">
             {isCollapsed ? (
@@ -72,7 +72,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         <nav className="space-y-1 p-4">
           {navLinks.map((link) => (
             <Link
@@ -84,7 +84,7 @@ export function Sidebar() {
                 isCollapsed && "justify-center"
               )}
             >
-              <link.icon className="h-4 w-4" />
+              <link.icon className="h-4 w-4 shrink-0" />
               {!isCollapsed && <span>{link.label}</span>}
             </Link>
           ))}
@@ -92,13 +92,15 @@ export function Sidebar() {
       </div>
 
       {/* Fixed Footer Section */}
-      <div className="border-t p-4 shrink-0">
+      <div className="border-t p-4 shrink-0 bg-background">
         <div className="flex items-center gap-4">
-          <User className="h-8 w-8 rounded-full" />
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+            {session?.user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+          </div>
           {!isCollapsed && (
-            <div>
-              <p className="text-sm font-medium">{session?.user?.name}</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">{session?.user?.name || 'User'}</p>
+              <p className="text-xs text-muted-foreground truncate">
                 {session?.user?.email}
               </p>
             </div>
