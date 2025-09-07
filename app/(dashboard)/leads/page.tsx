@@ -81,7 +81,7 @@ const fetchLeads = async ({
 
 export default function LeadsPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
   const { ref, inView } = useInView();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 

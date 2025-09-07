@@ -73,3 +73,10 @@ This project is a complete, full-stack dashboard application built with Next.js,
     ```
 
 The application should now be running on [http://localhost:3000](http://localhost:3000).
+
+## Demo Credentials
+
+After running the seed script (`npm run db:seed`), you can log in with the following credentials to view the demo data:
+
+-   **Email**: `TestManager1@gmail.com`
+-   **Password**: `check1234`
