@@ -1,4 +1,3 @@
-// app/(dashboard)/campaigns/page.tsx
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

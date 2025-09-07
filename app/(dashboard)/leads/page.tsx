@@ -1,4 +1,4 @@
-// app/(dashboard)/leads/page.tsx
+// app/(dashboard)/leads/page.tsx - Enhanced with richer lead data
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -15,18 +15,42 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Building, MapPin } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { LeadDetailSheet } from "@/components/leads/lead-detail-sheet";
 import { DataTableSkeleton } from "@/components/skeletons/data-table-skeleton";
 
-// A type definition for our lead data
+// Enhanced Lead type to match the sheet component
 type Lead = {
   id: string;
   name: string | null;
   email: string;
   status: string;
   createdAt: string;
+  title?: string;
+  company?: string;
+  location?: string;
+  profileImage?: string;
+  connectionStatus?: string;
+  lastActivity?: string;
+  linkedinUrl?: string;
+};
+
+// Mock function to enrich lead data (in real app, this would come from your database)
+const enrichLeadData = (lead: any): Lead => {
+  // Mock data - in production you'd fetch this from LinkedIn API or your database
+  const mockEnrichment = {
+    title: "Regional Head",
+    company: "Gynandra", 
+    location: "Mumbai, Maharashtra",
+    connectionStatus: "2nd",
+    lastActivity: "2 days ago"
+  };
+  
+  return {
+    ...lead,
+    ...mockEnrichment
+  };
 };
 
 // Fetch leads with search & pagination
@@ -45,12 +69,20 @@ const fetchLeads = async ({
   if (!res.ok) {
     throw new Error("Failed to fetch leads");
   }
-  return res.json();
+  const data = await res.json();
+  
+  // Enrich the leads data with additional profile information
+  const enrichedLeads = data.leads.map(enrichLeadData);
+  
+  return {
+    leads: enrichedLeads,
+    nextCursor: data.nextCursor
+  };
 };
 
 export default function LeadsPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 300); // Debounce search input
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const { ref, inView } = useInView();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
@@ -80,20 +112,28 @@ export default function LeadsPage() {
     setSelectedLead(lead);
   };
 
+  const getStatusVariant = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'secondary';
+      case 'contacted': return 'default'; 
+      case 'responded': return 'default';
+      default: return 'secondary';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-8">
-        {/* You can also create skeletons for the header if you like */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Campaigns</h1>
+            <h1 className="text-3xl font-bold">Leads</h1>
             <p className="text-muted-foreground">
-              Manage your campaigns and track their performance.
+              Manage all your leads across campaigns.
             </p>
           </div>
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
-            Create Campaign
+            Create Lead
           </Button>
         </div>
         <DataTableSkeleton columns={5} />
@@ -127,14 +167,16 @@ export default function LeadsPage() {
         className="max-w-sm"
       />
 
-      {/* Table */}
+      {/* Enhanced Table */}
       <div className="mt-8 rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Lead</TableHead>
+              <TableHead>Company</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Connection</TableHead>
+              <TableHead>Last Activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -144,12 +186,50 @@ export default function LeadsPage() {
                   <TableRow
                     key={lead.id}
                     onClick={() => handleRowClick(lead)}
-                    className="cursor-pointer" // Make it look clickable
+                    className="cursor-pointer hover:bg-muted/50"
                   >
-                    <TableCell>{lead.name}</TableCell>
-                    <TableCell>{lead.email}</TableCell>
                     <TableCell>
-                      <Badge>{lead.status}</Badge>
+                      <div className="flex items-center gap-3">
+                        {/* Profile Avatar */}
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                          {lead.name?.split(' ').map(n => n[0]).join('') || 'L'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-medium text-gray-900 truncate">
+                            {lead.name || 'Unknown Lead'}
+                          </div>
+                          <div className="text-sm text-gray-500 truncate">
+                            {lead.email}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Building className="w-3 h-3 text-gray-400" />
+                        <span className="truncate">{lead.company || 'Unknown'}</span>
+                      </div>
+                      {lead.location && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                          <MapPin className="w-3 h-3" />
+                          <span className="truncate">{lead.location}</span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusVariant(lead.status)}>
+                        {lead.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {lead.connectionStatus || 'Unknown'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-gray-600">
+                        {lead.lastActivity || 'Never'}
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -168,7 +248,8 @@ export default function LeadsPage() {
           No more leads to load.
         </div>
       )}
-      {/* Add the Sheet component to the page */}
+
+      {/* Enhanced Sheet Component */}
       <LeadDetailSheet
         lead={selectedLead}
         isOpen={!!selectedLead}
